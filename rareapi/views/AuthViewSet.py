@@ -55,15 +55,14 @@ def register_user(request):
         first_name=req_body['first_name'],
         last_name=req_body['last_name'],
         email=req_body['email'],
-        password=req_body['password'],
-        username=req_body['username']
+        password=req_body['password']
     )
 
     # Now save the extra info in the levelupapi_gamer table
     rare_user = RareUser.objects.create(
         bio=req_body['bio'],
-        user=new_user,
-        profile_image=req_body['profile_image_url']
+        profile_image=req_body['profile_image_url'],
+        user=new_user
     )
 
     # Use the REST Framework's token generator on the new user account
