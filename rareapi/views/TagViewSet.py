@@ -21,4 +21,4 @@ class TagViewSet(ViewSet):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ("label",)
+        fields = ("id","label")
