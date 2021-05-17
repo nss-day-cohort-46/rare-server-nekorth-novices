@@ -1,0 +1,11 @@
+[
+    {
+        "model": "rareapi.rareuser",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "bio": "Me",
+            "profile_image": ""
+        }
+    }
+]
