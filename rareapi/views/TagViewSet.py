@@ -17,6 +17,11 @@ class TagViewSet(ViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception:
             return HttpResponse(Exception)
+    
+    def list(self, request):
+        tags = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True, context={'request': request})
+        return Response(serializer.data)
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
