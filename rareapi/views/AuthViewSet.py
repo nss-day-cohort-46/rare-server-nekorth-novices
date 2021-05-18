@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from rareapi.models import RareUser
+from rest_framework.decorators import api_view
 
 
 @csrf_exempt
@@ -72,20 +73,13 @@ def register_user(request):
     data = json.dumps({"valid": True, "token": token.key})
     return HttpResponse(data, content_type='application/json')
 
+@api_view()
 def check_active(request):
     '''Handles the creation of a new gamer for authentication
 
     Method arguments:
-      request -- The full HTTP request object
+    request -- The full HTTP request object
     '''
 
-    user = User.objects.get(user=request.auth.user)
-
-    if user is not None and user['is_active']:
-        data = json.dumps({"valid": True})
-        return HttpResponse(data, content_type='application/json')
-
-    else:
-        # Bad key was provided. So we can't verify the user.
-        data = json.dumps({"valid": False})
-        return HttpResponse(data, content_type='application/json')
+    data = json.dumps({"valid": request.auth.user.is_active})
+    return HttpResponse(data, content_type='application/json')
