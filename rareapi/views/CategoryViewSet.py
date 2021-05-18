@@ -23,6 +23,15 @@ class CategoryViewSet(ViewSet):
         serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
 
+    def destroy(self, request, pk=None):
+        try:
+            category = Category.objects.get(pk=pk)
+            category.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
