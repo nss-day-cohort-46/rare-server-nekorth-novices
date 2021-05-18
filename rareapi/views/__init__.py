@@ -3,3 +3,4 @@ from .CategoryViewSet import CategoryViewSet
 from .CommentViewSet import CommentViewSet
 from .TagViewSet import TagViewSet
 from .PostViewSet import PostViewSet
+from .RareUserViewSet import RareUserViewSet
