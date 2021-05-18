@@ -23,6 +23,16 @@ class TagViewSet(ViewSet):
         serializer = TagSerializer(tags, many=True, context={'request': request})
         return Response(serializer.data)
 
+    def destroy(self, request, pk=None):
+        # TODO: admin-only endpoint
+        try:
+            tag = Tag.objects.get(pk=pk)
+            tag.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
