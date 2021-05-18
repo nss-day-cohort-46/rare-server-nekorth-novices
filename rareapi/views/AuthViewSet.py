@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from rareapi.models import RareUser
+from rest_framework.decorators import api_view
 
 
 @csrf_exempt
@@ -70,4 +71,15 @@ def register_user(request):
 
     # Return the token to the client
     data = json.dumps({"valid": True, "token": token.key})
+    return HttpResponse(data, content_type='application/json')
+
+@api_view()
+def check_active(request):
+    '''Handles the creation of a new gamer for authentication
+
+    Method arguments:
+    request -- The full HTTP request object
+    '''
+
+    data = json.dumps({"valid": request.auth.user.is_active})
     return HttpResponse(data, content_type='application/json')
