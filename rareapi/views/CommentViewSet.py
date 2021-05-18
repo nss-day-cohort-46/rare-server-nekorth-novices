@@ -24,11 +24,23 @@ class CommentViewSet(ViewSet):
             return HttpResponse(Exception)
 
     def destroy(self, request, pk):
-        # TODO: only the comment creator should be able to delete
+        # TODO: only creator or admin should be able to delete
         try:
             comment = Comment.objects.get(pk=pk)
             comment.delete()
 
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
+    
+    def update(self, request, pk):
+        # TODO: only creator should be able to edit
+        comment = Comment.objects.get(pk=pk)
+
+        comment.content = request.data["content"]
+
+        try:
+            comment.save()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         except Exception:
             return HttpResponse(Exception)
