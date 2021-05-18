@@ -9,7 +9,7 @@
     ],
     "python.pythonPath": "/Users/nickcarver/.local/share/virtualenvs/rare-server-nekorth-novices-HIARH2Fr/bin/python",
     "python.linting.pylintArgs": [
-        "--django-settings-module=levelup.settings",
+        "--django-settings-module=rare.settings",
     ],
     "python.linting.pylintEnabled": true
 }
