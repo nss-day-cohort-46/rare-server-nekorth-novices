@@ -71,3 +71,21 @@ def register_user(request):
     # Return the token to the client
     data = json.dumps({"valid": True, "token": token.key})
     return HttpResponse(data, content_type='application/json')
+
+def check_active(request):
+    '''Handles the creation of a new gamer for authentication
+
+    Method arguments:
+      request -- The full HTTP request object
+    '''
+
+    user = RareUser.objects.get(user=request.auth.user)
+
+    if user is not None and user['is_active']:
+        data = json.dumps({"valid": True})
+        return HttpResponse(data, content_type='application/json')
+
+    else:
+        # Bad key was provided. So we can't verify the user.
+        data = json.dumps({"valid": False})
+        return HttpResponse(data, content_type='application/json')

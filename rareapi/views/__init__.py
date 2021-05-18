@@ -1,1 +1,1 @@
-from .AuthViewSet import login_user, register_user
+from .AuthViewSet import login_user, register_user, check_active
