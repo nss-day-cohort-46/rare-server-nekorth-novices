@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
+from django.core.exceptions import PermissionDenied
 
 class RareUserViewSet(ViewSet):
     # def create(self, request):
@@ -49,6 +50,8 @@ class RareUserViewSet(ViewSet):
     #     except Exception as ex:
     #         return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def list(self, request):
+        if not request.auth.user.has_perm('rareapi.view_rareuser'):
+            raise PermissionDenied()
         users = RareUser.objects.order_by('user__first_name').exclude(user=request.auth.user)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
