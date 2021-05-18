@@ -6,5 +6,10 @@
             "name": "Rare",
             "database": "./db.sqlite3"
         }
-    ]
+    ],
+    "python.pythonPath": "/Users/nickcarver/.local/share/virtualenvs/rare-server-nekorth-novices-HIARH2Fr/bin/python",
+    "python.linting.pylintArgs": [
+        "--django-settings-module=levelup.settings",
+    ],
+    "python.linting.pylintEnabled": true
 }
