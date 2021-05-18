@@ -79,7 +79,7 @@ def check_active(request):
       request -- The full HTTP request object
     '''
 
-    user = RareUser.objects.get(user=request.auth.user)
+    user = User.objects.get(user=request.auth.user)
 
     if user is not None and user['is_active']:
         data = json.dumps({"valid": True})

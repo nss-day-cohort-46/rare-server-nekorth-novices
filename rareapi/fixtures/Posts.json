@@ -1,0 +1,13 @@
+[
+    {
+        "model": "rareapi.post",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "category": null,
+            "title": "Post 1",
+            "image_url": "",
+            "content": "This is the first post"
+        }
+    }
+]

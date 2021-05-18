@@ -6,5 +6,5 @@ class RareUser(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(max_length=50)
-    created_on = models.DateField(default=timezone.now())
+    created_on = models.DateTimeField(default=timezone.now())
     profile_image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
