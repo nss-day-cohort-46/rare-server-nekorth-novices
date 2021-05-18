@@ -32,6 +32,18 @@ class TagViewSet(ViewSet):
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         except Exception:
             return HttpResponse(Exception)
+    
+    def update(self, request, pk):
+        # TODO: admin-only endpoint
+        tag = Tag.objects.get(pk=pk)
+
+        tag.label = request.data["label"]
+
+        try:
+            tag.save()
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
