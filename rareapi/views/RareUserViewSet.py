@@ -49,16 +49,16 @@ class RareUserViewSet(ViewSet):
     #     except Exception as ex:
     #         return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def list(self, request):
-        users = RareUser.objects.order_by('user__first_name')
+        users = RareUser.objects.order_by('user__first_name').exclude(user=request.auth.user)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username')
+        fields = ('first_name', 'last_name', 'username', 'is_staff', 'is_active')
 
 class RareUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False)
     class Meta:
         model = RareUser
-        fields = ('user', 'bio')
+        fields = ('user', 'bio', 'id')
