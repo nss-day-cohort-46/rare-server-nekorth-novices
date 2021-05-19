@@ -7,6 +7,7 @@ from rest_framework import status
 
 class CategoryViewSet(ViewSet):
     def create(self, request):
+        # TODO: Add unique constraint to label property on model?
         category = Category()
         category.label = request.data["label"]
 
@@ -18,10 +19,32 @@ class CategoryViewSet(ViewSet):
             return HttpResponse(Exception)
     
     def list(self, request):
-        # TODO: admin-only endpoint
+        # TODO: admin-only endpoint?
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True, context={'request': request})
         return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        # TODO: admin-only endpoint
+        try:
+            category = Category.objects.get(pk=pk)
+            category.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
+    
+    def update(self, request, pk):
+        # TODO: admin-only endpoint
+        category = Category.objects.get(pk=pk)
+
+        category.label = request.data["label"]
+
+        try:
+            category.save()
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        except Exception:
+            return HttpResponse(Exception)
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
