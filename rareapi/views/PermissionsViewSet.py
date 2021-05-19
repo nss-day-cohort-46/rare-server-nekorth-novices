@@ -6,17 +6,14 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from rareapi.models import Post, Category, RareUser, Tag, Comment
-from django.contrib.auth.models import User
+from rareapi.models import Post, Category, RareUser
+from django.contrib.auth.models import Permission, User
 from django.db.models import Q
-from .TagViewSet import TagSerializer
-from .CategoryViewSet import CategorySerializer
 
-# CHECK SERIALIZERS SEE IF CAN REUSE THE COMMENT SERIALIZER
-class PostViewSet(ViewSet):
+
+class PermissionsViewSet(ViewSet):
     def create(self, request):
-        rareuser = RareUser.objects.get(user=request.auth.user)
-        post = Post()
+        permission = Permission()
         post.title = request.data["title"]
         post.user = rareuser
         post.content = request.data["content"]
@@ -25,8 +22,6 @@ class PostViewSet(ViewSet):
             post.category = category
         try:
             post.save()
-            tags = Tag.objects.in_bulk(request.data["tag_ids"])
-            post.tag_set.set(tags)
             serializer = PostSerializer(post, context={'request': request})
             return Response(serializer.data)
         except ValidationError as ex:
@@ -62,32 +57,21 @@ class PostViewSet(ViewSet):
         posts = Post.objects.all()
         search_text = self.request.query_params.get('q', None)
         sort_text = self.request.query_params.get('orderby', None)
-        user_id = self.request.query_params.get('user_id', None)
-        rareuser = RareUser.objects.get(user = request.auth.user)
-        if user_id is not None:
-            posts = posts.filter(user = rareuser)
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username',)
+        fields = ('first_name', 'last_name')
+
 class RareUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False)
     class Meta:
         model = RareUser
-        fields = ('user', 'bio')
-class CommentSerializer(serializers.ModelSerializer):
-    author = RareUserSerializer(many=False)
-    class Meta:
-        model = Comment
-        fields = "__all__"       
+        fields = ('user', 'bio')       
 class PostSerializer(serializers.ModelSerializer):
     user = RareUserSerializer(many=False)
-    category = CategorySerializer(many=False)
-    tag_set = TagSerializer(many=True)
-    comment_set = CommentSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set')
+        fields = ('id', 'title','user','content','image_url','publication_date','approved')

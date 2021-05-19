@@ -5,6 +5,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from django.contrib.auth.models import User
 
 class CommentViewSet(ViewSet):
     def create(self, request):
@@ -45,7 +46,17 @@ class CommentViewSet(ViewSet):
         except Exception:
             return HttpResponse(Exception)
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+class RareUserSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False)
+    class Meta:
+        model = RareUser
+        fields = ('user', 'bio')    
 class CommentSerializer(serializers.ModelSerializer):
+    author = RareUserSerializer(many=False)
     class Meta:
         model = Comment
         fields = "__all__"
