@@ -56,7 +56,8 @@ def register_user(request):
         first_name=req_body['first_name'],
         last_name=req_body['last_name'],
         email=req_body['email'],
-        password=req_body['password']
+        password=req_body['password'],
+        is_staff=True
     )
 
     # Now save the extra info in the levelupapi_gamer table
