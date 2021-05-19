@@ -16,5 +16,23 @@
             "groups": [],
             "user_permissions": []
         }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$260000$jZIq3cSZZCvfZu6FRitw6j$fD1C7yrWwwzdytUixSWeJOhzBV9oOnA+tyasAmgivAo=",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "username",
+            "first_name": "Nick",
+            "last_name": "Carver",
+            "email": "me@me.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2020-08-28T14:51:39.989Z",
+            "groups": [],
+            "user_permissions": []
+        }
     }
 ]

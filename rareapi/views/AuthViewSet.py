@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from rareapi.models import RareUser
+from rest_framework.decorators import api_view
 
 
 @csrf_exempt
@@ -64,10 +65,24 @@ def register_user(request):
         profile_image=req_body['profile_image_url'],
         user=new_user
     )
+    #Give user default permissions
+    permissions = [48]
+    new_user.user_permissions.set(permissions)
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)
 
     # Return the token to the client
     data = json.dumps({"valid": True, "token": token.key})
+    return HttpResponse(data, content_type='application/json')
+
+@api_view()
+def check_active(request):
+    '''Handles the creation of a new gamer for authentication
+
+    Method arguments:
+    request -- The full HTTP request object
+    '''
+
+    data = json.dumps({"valid": request.auth.user.is_active})
     return HttpResponse(data, content_type='application/json')
