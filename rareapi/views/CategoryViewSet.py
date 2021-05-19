@@ -25,6 +25,7 @@ class CategoryViewSet(ViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, pk=None):
+        # TODO: admin-only endpoint
         try:
             category = Category.objects.get(pk=pk)
             category.delete()
