@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf.urls import include
 from django.urls import path
 from rest_framework import routers
-from rareapi.views import register_user, login_user, check_active, PostViewSet, RareUserViewSet
+from rareapi.views import register_user, login_user, check_active, PostViewSet, RareUserViewSet, change_active
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -36,5 +36,6 @@ urlpatterns = [
     path('register', register_user),
     path('login', login_user),
     path('check-active', check_active),
+    path('change-active', change_active),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
