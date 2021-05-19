@@ -47,6 +47,7 @@ class PostViewSet(ViewSet):
         if request.data["category_id"] is not 0 :
             category = Category.objects.get(pk=request.data["category_id"])
             post.category = category
+        post.tag_set.set(request.data["tag_ids"])
         post.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
     def destroy(self, request, pk=None):
