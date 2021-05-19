@@ -66,6 +66,8 @@ class PostViewSet(ViewSet):
         rareuser = RareUser.objects.get(user = request.auth.user)
         if user_id is not None:
             posts = posts.filter(user = rareuser)
+        for post in posts:
+            post.ownership = rareuser
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
@@ -90,4 +92,4 @@ class PostSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set')
+        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership')
