@@ -27,6 +27,12 @@ class ReactionViewSet(ViewSet):
 
         except Exception:
             return HttpResponse(Exception)
+        
+    def list(self, request):
+        reactions = Reaction.objects.all()
+        serializer = ReactionSerializer(reactions, many=True, context={'request': request})
+
+        return Response(serializer.data)
 
 class ReactionSerializer(serializers.ModelSerializer):
     class Meta:
