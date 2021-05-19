@@ -84,5 +84,5 @@ def check_active(request):
     request -- The full HTTP request object
     '''
 
-    data = json.dumps({"valid": request.auth.user.is_active})
+    data = json.dumps({"valid": request.auth.user.is_active, "is_admin": request.auth.user.is_staff})
     return HttpResponse(data, content_type='application/json')
