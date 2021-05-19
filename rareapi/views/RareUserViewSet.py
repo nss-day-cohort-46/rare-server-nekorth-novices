@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseServerError
 from rest_framework import status
 from django.utils import timezone
+import json
 
 class RareUserViewSet(ViewSet):
     # def create(self, request):
@@ -71,7 +72,6 @@ class RareUserViewSet(ViewSet):
             subscription.follower = follower
             try:
                 subscription.save()
-            # serializer = SubscriptionSerializer(subscription, many=False, conext={'request': request})
                 return Response({}, status=status.HTTP_201_CREATED)
             except Exception:
                 return HttpResponseServerError(Exception)
@@ -83,6 +83,19 @@ class RareUserViewSet(ViewSet):
                 return Response({}, status=status.HTTP_204_NO_CONTENT)
             except Exception:
                 return HttpResponseServerError(Exception)
+    
+    @action(methods=["post"], detail=False)
+    def subscription_status(self, request):
+        author = RareUser.objects.get(pk=request.data["author_id"])
+        follower = RareUser.objects.get(user=request.auth.user)
+
+        try:
+            subscription = Subscription.objects.get(author=author, follower=follower, ended_on=None)
+            response = json.dumps({"subscribed": True})
+            return HttpResponse(response, content_type='application/json')
+        except:
+            response = json.dumps({"subscribed": False})
+            return HttpResponse(response, content_type='application/json')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
