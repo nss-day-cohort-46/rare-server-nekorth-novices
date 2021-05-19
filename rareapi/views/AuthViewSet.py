@@ -65,6 +65,9 @@ def register_user(request):
         profile_image=req_body['profile_image_url'],
         user=new_user
     )
+    #Give user default permissions
+    permissions = [48]
+    new_user.user_permissions.set(permissions)
 
     # Use the REST Framework's token generator on the new user account
     token = Token.objects.create(user=new_user)
