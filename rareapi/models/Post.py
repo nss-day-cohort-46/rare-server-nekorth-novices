@@ -10,3 +10,14 @@ class Post(models.Model):
     image_url = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100)
     content = models.CharField(max_length=200)
     approved = models.BooleanField(default=False)
+
+    @property
+    def ownership(self):
+        return self.__ownership
+
+    @ownership.setter
+    def ownership(self, value):
+        if value == self.user :
+            self.__ownership = True
+        else :
+            self.__ownership = False
