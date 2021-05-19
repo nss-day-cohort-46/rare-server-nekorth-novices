@@ -15,10 +15,11 @@ class RareUserViewSet(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
+    #only returns list of active users
     def list(self, request):
         if not request.auth.user.has_perm('rareapi.view_rareuser'):
             raise PermissionDenied()
-        users = RareUser.objects.order_by('user__first_name').exclude(user=request.user)
+        users = RareUser.objects.order_by('user__first_name').exclude(user=request.user).exclude(user__is_active=False)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
 class UserSerializer(serializers.ModelSerializer):
