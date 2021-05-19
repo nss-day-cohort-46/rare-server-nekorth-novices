@@ -40,6 +40,4 @@ def change_active(request):
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
         rare_user.user.save()
-        permissions = [48]
-        rare_user.user.user_permissions.set(permissions)
         return Response({}, status=status.HTTP_204_NO_CONTENT)
