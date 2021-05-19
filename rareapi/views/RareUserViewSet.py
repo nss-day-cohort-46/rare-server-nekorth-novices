@@ -1,4 +1,5 @@
 from django.http.response import HttpResponse
+from rest_framework.decorators import action
 from rareapi.models import RareUser
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ViewSet
@@ -17,9 +18,14 @@ class RareUserViewSet(ViewSet):
             return HttpResponseServerError(ex)
     #only returns list of active users
     def list(self, request):
+        users = RareUser.objects.order_by('user__first_name').exclude(user=request.user).exclude(user__is_active=False)
+        serializer = RareUserSerializer(users, many=True, context={'request': request})
+        return Response(serializer.data)
+    @action(detail=False)
+    def inactive(self, request):
         if not request.auth.user.has_perm('rareapi.view_rareuser'):
             raise PermissionDenied()
-        users = RareUser.objects.order_by('user__first_name').exclude(user=request.user).exclude(user__is_active=False)
+        users = RareUser.objects.order_by('user__first_name').exclude(user=request.user).exclude(user__is_active=True)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
 class UserSerializer(serializers.ModelSerializer):
