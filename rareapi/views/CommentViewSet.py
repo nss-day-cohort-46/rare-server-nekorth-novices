@@ -25,7 +25,8 @@ class CommentViewSet(ViewSet):
             return HttpResponse(Exception)
 
     def destroy(self, request, pk):
-        # TODO: only creator or admin should be able to delete
+        # TODO: only the comment creator should be able to delete
+
         try:
             comment = Comment.objects.get(pk=pk)
             comment.delete()
