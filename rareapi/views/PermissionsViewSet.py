@@ -36,9 +36,12 @@ def change_active(request):
     if request.data["action"] == "deactivate":
         rare_user.user.is_active = False
         rare_user.user.is_staff = False
+        rare_user.user.user_permissions.clear()
         rare_user.user.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
         rare_user.user.save()
+        permissions = [48]
+        rare_user.user.user_permissions.set(permissions)
         return Response({}, status=status.HTTP_204_NO_CONTENT)
