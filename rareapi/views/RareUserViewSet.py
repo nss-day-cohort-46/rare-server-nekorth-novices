@@ -1,5 +1,6 @@
 from django.http.response import HttpResponse
-from rareapi.models import RareUser
+from rest_framework.decorators import action
+from rareapi.models import RareUser, Subscription
 from django.contrib.auth.models import User
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -55,6 +56,14 @@ class RareUserViewSet(ViewSet):
         users = RareUser.objects.order_by('user__first_name').exclude(user=request.user)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
+
+    @action(method=["post", "delete" ])
+    def subscription(self, request, pk):
+        if request.method == "POST":
+            subscription = Subscription()
+            author = RareUser.objects.get(pk=request.data["author_id"])
+            follower = RareUser.objects.get(user=request.auth.user)
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
