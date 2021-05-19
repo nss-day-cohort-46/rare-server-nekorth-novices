@@ -76,14 +76,3 @@ def register_user(request):
     # Return the token to the client
     data = json.dumps({"valid": True, "token": token.key})
     return HttpResponse(data, content_type='application/json')
-
-@api_view()
-def check_active(request):
-    '''Handles the creation of a new gamer for authentication
-
-    Method arguments:
-    request -- The full HTTP request object
-    '''
-
-    data = json.dumps({"valid": request.auth.user.is_active, "is_admin": request.auth.user.is_staff})
-    return HttpResponse(data, content_type='application/json')

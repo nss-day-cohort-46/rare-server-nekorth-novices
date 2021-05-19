@@ -24,7 +24,7 @@ def check_active(request):
     data = json.dumps({"is_active": request.auth.user.is_active, "is_admin": request.auth.user.is_staff})
     return HttpResponse(data, content_type='application/json')
 
-@api_view()
+@api_view(["PUT"])
 def change_active(request):
     '''Handles the creation of a new gamer for authentication
 
@@ -32,15 +32,13 @@ def change_active(request):
     request -- The full HTTP request object
     '''
 
-    rare_user = RareUser.objects.get(user=request.auth.user)
+    rare_user = RareUser.objects.get(user=request.data['user_id'])
     if request.data["action"] == "deactivate":
         rare_user.user.is_active = False
         rare_user.user.is_staff = False
-        rare_user.save()
+        rare_user.user.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
-        rare_user.save()
+        rare_user.user.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-    data = json.dumps({"is_active": request.auth.user.is_active, "is_admin": request.auth.user.is_staff})
-    return HttpResponse(data, content_type='application/json')
