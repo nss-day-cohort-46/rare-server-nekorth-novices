@@ -56,7 +56,8 @@ def register_user(request):
         first_name=req_body['first_name'],
         last_name=req_body['last_name'],
         email=req_body['email'],
-        password=req_body['password']
+        password=req_body['password'],
+        is_staff=True
     )
 
     # Now save the extra info in the levelupapi_gamer table
@@ -74,15 +75,4 @@ def register_user(request):
 
     # Return the token to the client
     data = json.dumps({"valid": True, "token": token.key})
-    return HttpResponse(data, content_type='application/json')
-
-@api_view()
-def check_active(request):
-    '''Handles the creation of a new gamer for authentication
-
-    Method arguments:
-    request -- The full HTTP request object
-    '''
-
-    data = json.dumps({"valid": request.auth.user.is_active})
     return HttpResponse(data, content_type='application/json')
