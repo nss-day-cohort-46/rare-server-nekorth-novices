@@ -4,9 +4,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from django.core.exceptions import PermissionDenied
 
 class TagViewSet(ViewSet):
     def create(self, request):
+        if not request.auth.user.has_perm('rareapi.add_tag'):
+            raise PermissionDenied()
+
         tag = Tag()
 
         tag.label = request.data["label"]
@@ -25,6 +29,9 @@ class TagViewSet(ViewSet):
 
     def destroy(self, request, pk=None):
         # TODO: admin-only endpoint
+        if not request.auth.user.has_perm('rareapi.delete_tag'):
+            raise PermissionDenied()
+
         try:
             tag = Tag.objects.get(pk=pk)
             tag.delete()
@@ -35,6 +42,9 @@ class TagViewSet(ViewSet):
     
     def update(self, request, pk):
         # TODO: admin-only endpoint
+        if not request.auth.user.has_perm('rareapi.change_tag'):
+            raise PermissionDenied()
+
         tag = Tag.objects.get(pk=pk)
 
         tag.label = request.data["label"]

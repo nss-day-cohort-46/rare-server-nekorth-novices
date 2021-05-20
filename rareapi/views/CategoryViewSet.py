@@ -4,10 +4,14 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from django.core.exceptions import PermissionDenied
 
 class CategoryViewSet(ViewSet):
     def create(self, request):
         # TODO: Add unique constraint to label property on model?
+        if not request.auth.user.has_perm('rareapi.add_category'):
+            raise PermissionDenied()
+
         category = Category()
         category.label = request.data["label"]
 
@@ -26,6 +30,8 @@ class CategoryViewSet(ViewSet):
 
     def destroy(self, request, pk=None):
         # TODO: admin-only endpoint
+        if not request.auth.user.has_perm('rareapi.delete_category'):
+            raise PermissionDenied()
         try:
             category = Category.objects.get(pk=pk)
             category.delete()
@@ -36,6 +42,9 @@ class CategoryViewSet(ViewSet):
     
     def update(self, request, pk):
         # TODO: admin-only endpoint
+        if not request.auth.user.has_perm('rareapi.change_category'):
+            raise PermissionDenied()
+
         category = Category.objects.get(pk=pk)
 
         category.label = request.data["label"]

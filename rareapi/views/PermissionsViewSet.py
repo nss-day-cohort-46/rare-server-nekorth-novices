@@ -1,17 +1,11 @@
-
-from django.core.exceptions import ValidationError
 from rest_framework import status
-from django.http import HttpResponseServerError
-from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import serializers
 from rest_framework import status
-from rareapi.models import Post, Category, RareUser
-from django.contrib.auth.models import Permission, User
-from django.db.models import Q
+from rareapi.models import RareUser
 from rest_framework.decorators import api_view
 import json
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 
 @api_view()
 def check_active(request):
@@ -41,3 +35,22 @@ def change_active(request):
         rare_user.user.is_active = True
         rare_user.user.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["PUT"])
+def change_rank(request):
+    '''Handles the creation of a new gamer for authentication
+
+    Method arguments:
+    request -- The full HTTP request object
+    '''
+    if not request.auth.user.has_perm('rareapi.change_rareuser'):
+        raise PermissionDenied()
+    rare_user = RareUser.objects.get(user=request.data['id'])
+    rare_user.user.is_staff = request.data['isAdmin']
+    rare_user.user.save()
+    if request.data['isAdmin']:
+        permissions = [46, 48, 33, 34, 35, 49, 50, 51, 57, 58, 59]
+        rare_user.user_permissions.set(permissions)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+    rare_user.user.user_permissions.clear()
+    return Response({}, status=status.HTTP_204_NO_CONTENT)
