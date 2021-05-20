@@ -61,12 +61,17 @@ class PostViewSet(ViewSet):
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def list(self, request):
         posts = Post.objects.all()
-        search_text = self.request.query_params.get('q', None)
-        sort_text = self.request.query_params.get('orderby', None)
+        search_term = self.request.query_params.get('q', None)
+        search_category = self.request.query_params.get('category', None)
         user_id = self.request.query_params.get('user_id', None)
         rareuser = RareUser.objects.get(user = request.auth.user)
         if user_id is not None:
             posts = posts.filter(user = rareuser)
+        if search_category is not None:
+            category = Category.objects.get(pk=search_category)
+            posts = posts.filter(category = category)
+        if search_term is not None:
+            posts = posts.filter(Q(title__contains=search_term) | Q(tag__label__contains=search_term))
         for post in posts:
             post.ownership = rareuser
         serializer = PostSerializer(
