@@ -6,7 +6,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from rareapi.models import Post, Category, RareUser, Tag, Comment
+from rareapi.models import Post, Category, RareUser, Tag, Comment, PostReaction
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .TagViewSet import TagSerializer
@@ -90,12 +90,17 @@ class CommentSerializer(serializers.ModelSerializer):
     author = RareUserSerializer(many=False)
     class Meta:
         model = Comment
-        fields = "__all__"       
+        fields = "__all__" 
+class PostReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostReaction
+        fields = ('__all__')         
 class PostSerializer(serializers.ModelSerializer):
     user = RareUserSerializer(many=False)
     category = CategorySerializer(many=False)
     tag_set = TagSerializer(many=True)
     comment_set = CommentSerializer(many=True)
+    postreaction_set = PostReactionSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership')
+        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership','postreaction_set')
