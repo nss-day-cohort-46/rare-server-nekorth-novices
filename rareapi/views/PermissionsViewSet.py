@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import status
-from rareapi.models import RareUser
+from rareapi.models import RareUser, DemotionQueue
 from rest_framework.decorators import api_view
 import json
 from django.http import HttpResponse
@@ -25,12 +25,19 @@ def change_active(request):
     Method arguments:
     request -- The full HTTP request object
     '''
-
+    if not request.auth.user.has_perm('rareapi.change_rareuser'):
+        raise PermissionDenied()
     rare_user = RareUser.objects.get(user=request.data['user_id'])
     if request.data["action"] == "deactivate":
-        rare_user.user.is_active = False
-        rare_user.user.save()
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        try:
+            is_in_queue = DemotionQueue.objects.get(user=rare_user, admin=request.auth.user, action=request.data["action"])
+            is_in_queue.approver = request.auth.user
+            is_in_queue.save()
+            return Response({status: "deactivated"}, status=status.HTTP_204_NO_CONTENT)
+        except DemotionQueue.DoesNotExist:
+            rare_user.user.is_active = False
+            rare_user.user.save()
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
         rare_user.user.save()
