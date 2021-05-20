@@ -47,6 +47,7 @@ class PostViewSet(ViewSet):
         if request.data["category_id"] is not 0 :
             category = Category.objects.get(pk=request.data["category_id"])
             post.category = category
+        post.tag_set.set(request.data["tag_ids"])
         post.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
     def destroy(self, request, pk=None):
@@ -71,6 +72,8 @@ class PostViewSet(ViewSet):
             posts = posts.filter(category = category)
         if search_term is not None:
             posts = posts.filter(Q(title__contains=search_term) | Q(tag__label__contains=search_term))
+        for post in posts:
+            post.ownership = rareuser
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
@@ -95,4 +98,4 @@ class PostSerializer(serializers.ModelSerializer):
     comment_set = CommentSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set')
+        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership')
