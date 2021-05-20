@@ -4,9 +4,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
+from django.core.exceptions import PermissionDenied
 
 class TagViewSet(ViewSet):
     def create(self, request):
+        if not request.auth.user.has_perm('rareapi.add_category'):
+            raise PermissionDenied()
+
         tag = Tag()
 
         tag.label = request.data["label"]
