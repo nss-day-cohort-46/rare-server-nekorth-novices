@@ -12,6 +12,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 import json
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 
 @api_view()
 def check_active(request):
@@ -41,3 +42,17 @@ def change_active(request):
         rare_user.user.is_active = True
         rare_user.user.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(["PUT"])
+def change_rank(request):
+    '''Handles the creation of a new gamer for authentication
+
+    Method arguments:
+    request -- The full HTTP request object
+    '''
+    if not request.auth.user.has_perm('rareapi.change_rareuser'):
+        raise PermissionDenied()
+    rare_user = RareUser.objects.get(user=request.data['id'])
+    rare_user.user.is_staff = request.data['isAdmin']
+    rare_user.user.save()
+    return Response({}, status=status.HTTP_204_NO_CONTENT)
