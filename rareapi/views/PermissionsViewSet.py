@@ -30,18 +30,19 @@ def change_active(request):
     rare_user = RareUser.objects.get(user=request.data['user_id'])
     if request.data["action"] == "deactivate":
         try:
-            is_in_queue = DemotionQueue.objects.get(user=rare_user, admin=request.auth.user, action=request.data["action"])
+            is_in_queue = DemotionQueue.objects.filter(user=rare_user, admin=request.auth.user, action=request.data["action"], approver__isnull=True)
             is_in_queue.approver = request.auth.user
             is_in_queue.save()
-            return Response({status: "deactivated"}, status=status.HTTP_204_NO_CONTENT)
-        except DemotionQueue.DoesNotExist:
             rare_user.user.is_active = False
+            return Response({"status": "deactivated"}, status=status.HTTP_204_NO_CONTENT)
+        except DemotionQueue.DoesNotExist:
+            is_in_queue = DemotionQueue
             rare_user.user.save()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
         rare_user.user.save()
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"status": "deactivated"}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(["PUT"])
 def change_rank(request):
