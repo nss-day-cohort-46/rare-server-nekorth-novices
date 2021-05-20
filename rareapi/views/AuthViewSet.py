@@ -67,7 +67,7 @@ def register_user(request):
         user=new_user
     )
     #Give user default permissions
-    permissions = [46, 48]
+    permissions = [46, 48, 33, 34, 35, 49, 50, 51, 57, 58, 59]
     new_user.user_permissions.set(permissions)
 
     # Use the REST Framework's token generator on the new user account
