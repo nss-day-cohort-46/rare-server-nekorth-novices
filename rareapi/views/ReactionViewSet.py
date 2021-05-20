@@ -7,10 +7,14 @@ from rest_framework import status
 from django.core.files.base import ContentFile
 import base64
 import uuid
+from django.core.exceptions import PermissionDenied
 
 class ReactionViewSet(ViewSet):
     def create(self, request):
         # Create a new instance of the reaction picture model you defined
+        if not request.auth.user.has_perm('rareapi.add_reaction'):
+            raise PermissionDenied()
+
         reaction = Reaction()
 
         format, imgstr = request.data["image_url"].split(';base64,')
