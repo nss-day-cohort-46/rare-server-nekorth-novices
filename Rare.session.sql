@@ -8,3 +8,5 @@ set is_active = 0
 where id = 1;
 
 Delete from rareapi_subscription where ended_on IS NULL;
+
+Delete from rareapi_rareuser where created_on is not NULL;

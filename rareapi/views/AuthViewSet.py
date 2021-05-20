@@ -6,6 +6,9 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from rareapi.models import RareUser
 from rest_framework.decorators import api_view
+from django.core.files.base import ContentFile
+import base64
+import uuid
 
 
 @csrf_exempt
@@ -61,11 +64,21 @@ def register_user(request):
     )
 
     # Now save the extra info in the levelupapi_gamer table
+
     rare_user = RareUser.objects.create(
         bio=req_body['bio'],
-        profile_image=req_body['profile_image_url'],
         user=new_user
     )
+    if req_body["profile_image_url"] == "":
+        rare_user.profile_image = "profile_images/12-f992eaef-09f3-40e0-8da0-39817f4fab3a.jpeg"
+    else:
+        format, imgstr = req_body["profile_image_url"].split(';base64,')
+        ext = format.split('/')[-1]
+        data = ContentFile(base64.b64decode(imgstr), name=f'{rare_user.id}-{uuid.uuid4()}.{ext}')
+
+        rare_user.profile_image = data
+    rare_user.save()
+
     #Give user default permissions
     permissions = [48]
     new_user.user_permissions.set(permissions)
