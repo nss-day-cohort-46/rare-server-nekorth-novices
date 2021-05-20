@@ -55,4 +55,9 @@ def change_rank(request):
     rare_user = RareUser.objects.get(user=request.data['id'])
     rare_user.user.is_staff = request.data['isAdmin']
     rare_user.user.save()
+    if request.data['isAdmin']:
+        permissions = [46, 48]
+        rare_user.user_permissions.set(permissions)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
+    rare_user.user.user_permissions.clear()
     return Response({}, status=status.HTTP_204_NO_CONTENT)
