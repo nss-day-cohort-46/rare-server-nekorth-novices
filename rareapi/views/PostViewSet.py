@@ -1,4 +1,5 @@
 
+from rareapi.models.Subscription import Subscription
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from django.http import HttpResponseServerError
@@ -15,6 +16,7 @@ from django.core.files.base import ContentFile
 from rest_framework.decorators import action
 import base64
 import uuid
+from rest_framework.decorators import action
 
 # CHECK SERIALIZERS SEE IF CAN REUSE THE COMMENT SERIALIZER
 class PostViewSet(ViewSet):
@@ -102,12 +104,25 @@ class PostViewSet(ViewSet):
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
+
     @action(methods=["PUT"], detail=False)
     def approved(self, request):
         post = Post.objects.get(pk=request.data["postId"])
         post.approved = not post.approved
         post.save()
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False)
+    def subscribed_posts(self, request):
+        subscribed_posts = []
+        subscriptions = Subscription.objects.filter(follower=request.auth.user.id, ended_on = None)
+        for subscription in subscriptions:
+            user_posts = Post.objects.filter(user=subscription.author)
+            for post in user_posts:
+                subscribed_posts.append(post)
+
+        serializer = PostSerializer(subscribed_posts, many=True, context={'request': request})
+        return Response(serializer.data)
 
 
 class UserSerializer(serializers.ModelSerializer):
