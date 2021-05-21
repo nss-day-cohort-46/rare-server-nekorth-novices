@@ -1,4 +1,5 @@
 
+from rareapi.models.Subscription import Subscription
 from django.core.exceptions import ValidationError
 from rest_framework import status
 from django.http import HttpResponseServerError
@@ -14,6 +15,7 @@ from .CategoryViewSet import CategorySerializer
 from django.core.files.base import ContentFile
 import base64
 import uuid
+from rest_framework.decorators import action
 
 # CHECK SERIALIZERS SEE IF CAN REUSE THE COMMENT SERIALIZER
 class PostViewSet(ViewSet):
@@ -93,6 +95,19 @@ class PostViewSet(ViewSet):
         serializer = PostSerializer(
             posts, many=True, context={'request': request})
         return Response(serializer.data)
+
+    @action(detail=False)
+    def subscribed_posts(self, request):
+        subscribed_posts = []
+        subscriptions = Subscription.objects.filter(follower=request.auth.user.id, ended_on = None)
+        for subscription in subscriptions:
+            user_posts = Post.objects.filter(user=subscription.author)
+            for post in user_posts:
+                subscribed_posts.append(post)
+
+        serializer = PostSerializer(subscribed_posts, many=True, context={'request': request})
+        return Response(serializer.data)
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
