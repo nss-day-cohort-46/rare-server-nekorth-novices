@@ -14,8 +14,8 @@ def check_active(request):
     Method arguments:
     request -- The full HTTP request object
     '''
-
-    data = json.dumps({"is_active": request.auth.user.is_active, "is_admin": request.auth.user.is_staff})
+    rare_user = RareUser.objects.get(user = request.auth.user)
+    data = json.dumps({"is_active": request.auth.user.is_active, "is_admin": request.auth.user.is_staff, "logged_in_user_id": rare_user.id})
     return HttpResponse(data, content_type='application/json')
 
 @api_view(["PUT"])
