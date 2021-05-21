@@ -77,7 +77,10 @@ class PostViewSet(ViewSet):
         search_term = self.request.query_params.get('q', None)
         search_category = self.request.query_params.get('category', None)
         user_id = self.request.query_params.get('user_id', None)
+        user = self.request.query_params.get('user', None)
         rareuser = RareUser.objects.get(user = request.auth.user)
+        if user is not None:
+            posts = posts.filter(user = RareUser.objects.get(pk=user))
         if user_id is not None:
             posts = posts.filter(user = rareuser)
         if search_category is not None:
