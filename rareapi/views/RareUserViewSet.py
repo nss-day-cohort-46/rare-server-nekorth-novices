@@ -16,6 +16,8 @@ class RareUserViewSet(ViewSet):
     def retrieve(self, request, pk):
         try:
             user = RareUser.objects.get(pk=pk)
+            subscribers = Subscription.objects.filter(author=pk, ended_on=None).count()
+            user.subscribers = subscribers
             serializer = RareUserSerializer(user, context={'request': request})
             return Response(serializer.data)
         except Exception as ex:
@@ -80,6 +82,11 @@ class RareUserViewSet(ViewSet):
         except:
             response = json.dumps({"subscribed": False})
             return HttpResponse(response, content_type='application/json')
+    @action(detail=False)
+    def user_profile(self, request):
+        user = RareUser.objects.get(user=request.auth.user)
+        serializer = RareUserSerializer(user, many=False, context={'request': request})
+        return Response(serializer.data["id"])
 
 class DemotionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,8 +103,7 @@ class RareUserSerializer(serializers.ModelSerializer):
     user_to_change = DemotionSerializer(many=True)
     class Meta:
         model = RareUser
-        fields = ('user', 'bio', 'id', 'profile_image', 'created_on', 'user_to_change')
-        depth = 1
+        fields = ('user', 'bio', 'id', 'profile_image', 'created_on', 'user_to_change', 'subscribers')
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:

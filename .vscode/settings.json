@@ -7,7 +7,7 @@
             "database": "./db.sqlite3"
         }
     ],
-    "python.pythonPath": "/Users/nickcarver/.local/share/virtualenvs/rare-server-nekorth-novices-HIARH2Fr/bin/python",
+    "python.pythonPath": "/Users/kaitlinkelley/.local/share/virtualenvs/rare-server-nekorth-novices-QFHPfgaG/bin/python",
     "python.linting.pylintArgs": [
         "--django-settings-module=rare.settings",
     ],
