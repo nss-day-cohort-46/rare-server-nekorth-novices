@@ -1,3 +1,4 @@
+from rareapi.models.DemotionQueue import DemotionQueue
 from django.http.response import HttpResponse
 from rest_framework.decorators import action
 from rareapi.models import RareUser, Subscription
@@ -80,6 +81,11 @@ class RareUserViewSet(ViewSet):
             response = json.dumps({"subscribed": False})
             return HttpResponse(response, content_type='application/json')
 
+class DemotionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DemotionQueue
+        fields = ('user', 'admin', 'approver', 'action')
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -87,9 +93,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RareUserSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False)
+    user_to_change = DemotionSerializer(many=True)
     class Meta:
         model = RareUser
-        fields = ('user', 'bio', 'id', 'profile_image', 'created_on')
+        fields = ('user', 'bio', 'id', 'profile_image', 'created_on', 'user_to_change')
+        depth = 1
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
