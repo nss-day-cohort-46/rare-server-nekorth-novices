@@ -28,25 +28,32 @@ def change_active(request):
     if not request.auth.user.has_perm('rareapi.change_rareuser'):
         raise PermissionDenied()
     rare_user = RareUser.objects.get(user=request.data['user_id'])
+    admin_rare_user = RareUser.objects.get(user=request.auth.user)
     if request.data["action"] == "deactivate":
         try:
-            is_in_queue = DemotionQueue.objects.filter(user=rare_user, admin=request.auth.user, action=request.data["action"], approver__isnull=True)
-            if request.auth.user is not is_in_queue.admin:
-                is_in_queue.approver = request.auth.user
+            is_in_queue = DemotionQueue.objects.get(user=rare_user, action=request.data["action"], approver__isnull=True)
+            if admin_rare_user.id is not is_in_queue.admin_id:
+                is_in_queue.approver = admin_rare_user
                 is_in_queue.save()
                 rare_user.user.is_active = False
-                return Response({"status": "deactivated"}, status=status.HTTP_204_NO_CONTENT)
-            raise PermissionDenied()
+                rare_user.user.save()
+                data = json.dumps({"status": "deactivated"})
+                return HttpResponse(data, content_type='application/json', status=status.HTTP_200_OK)
+            else:
+                raise PermissionDenied()
         except DemotionQueue.DoesNotExist:
             is_in_queue = DemotionQueue()
-            is_in_queue.admin = request.auth.user
+            is_in_queue.user = rare_user
+            is_in_queue.admin = admin_rare_user
+            is_in_queue.action = request.data["action"]
             is_in_queue.save()
-            rare_user.user.save()
-            return Response({"status": "queued"}, status=status.HTTP_204_NO_CONTENT)
+            data = json.dumps({"status": "queued"})
+            return HttpResponse(data, content_type='application/json', status=status.HTTP_200_OK)
     elif request.data["action"] == "activate":
         rare_user.user.is_active = True
         rare_user.user.save()
-        return Response({"status": "deactivated"}, status=status.HTTP_204_NO_CONTENT)
+        data = json.dumps({"status": "activated"})
+        return HttpResponse(data, content_type='application/json', status=status.HTTP_200_OK)
 
 @api_view(["PUT"])
 def change_rank(request):
