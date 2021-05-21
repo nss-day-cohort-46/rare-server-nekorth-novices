@@ -42,8 +42,13 @@ class PostViewSet(ViewSet):
     def retrieve(self, request, pk=None):
         try:
             post = Post.objects.get(pk=pk)
+            rareuser = RareUser.objects.get(user=request.auth.user)
+            comments = Comment.objects.filter(post = post)
+            for comment in comments:
+                comment.owner = rareuser
+            comment_serializer = CommentSerializer(comments, many = True, context={'request': request})
             serializer = PostSerializer(post, context={'request': request})
-            return Response(serializer.data)
+            return Response({"post": serializer.data, "comments":comment_serializer.data})
         except Exception as ex:
             return HttpResponseServerError(ex)
     def update(self, request, pk=None):
@@ -103,10 +108,10 @@ class RareUserSerializer(serializers.ModelSerializer):
         model = RareUser
         fields = ('user', 'bio')
 class CommentSerializer(serializers.ModelSerializer):
-    author = RareUserSerializer(many=False)
+    author = RareUserSerializer(many=False) 
     class Meta:
         model = Comment
-        fields = "__all__" 
+        fields = ("id","content", "created_on", "owner", "author")
 class PostReactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostReaction
