@@ -3,6 +3,7 @@ from .CategoryViewSet import CategoryViewSet
 from .CommentViewSet import CommentViewSet
 from .TagViewSet import TagViewSet
 from .PostViewSet import PostViewSet
-from .PermissionsViewSet import check_active, change_active
+from .PermissionsViewSet import check_active, change_active, change_rank
 from .ReactionViewSet import ReactionViewSet
 from .RareUserViewSet import RareUserViewSet
+from .PostReactionViewSet import PostReactionViewSet

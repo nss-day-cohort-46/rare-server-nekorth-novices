@@ -1,6 +1,6 @@
 import json
 from django.http import HttpResponse
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
@@ -9,7 +9,6 @@ from rest_framework.decorators import api_view
 from django.core.files.base import ContentFile
 import base64
 import uuid
-
 
 @csrf_exempt
 def login_user(request):
@@ -80,7 +79,7 @@ def register_user(request):
     rare_user.save()
 
     #Give user default permissions
-    permissions = [48]
+    permissions = [46, 48, 33, 34, 35, 49, 50, 51, 57, 58, 59]
     new_user.user_permissions.set(permissions)
 
     # Use the REST Framework's token generator on the new user account

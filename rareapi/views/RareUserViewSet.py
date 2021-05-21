@@ -26,6 +26,18 @@ class RareUserViewSet(ViewSet):
         users = RareUser.objects.order_by('user__first_name').exclude(user=request.user).exclude(user__is_active=False)
         serializer = RareUserSerializer(users, many=True, context={'request': request})
         return Response(serializer.data)
+    def update(self, request, pk):
+        if not request.auth.user.has_perm('rareapi.change_rareuser'):
+            raise PermissionDenied()
+        rareuser = RareUser.objects.get(pk=pk)
+        rareuser.user.first_name = request.data["firstName"]
+        rareuser.user.last_name = request.data["lastName"]
+        rareuser.user.username = request.data["username"]
+        rareuser.bio = request.data["bio"]
+        rareuser.user.email = request.data["email"]
+        rareuser.user.save()
+        rareuser.save()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
     @action(detail=False)
     def inactive(self, request):
         if not request.auth.user.has_perm('rareapi.view_rareuser'):

@@ -6,11 +6,14 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from rareapi.models import Post, Category, RareUser, Tag, Comment
+from rareapi.models import Post, Category, RareUser, Tag, Comment, PostReaction
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .TagViewSet import TagSerializer
 from .CategoryViewSet import CategorySerializer
+from django.core.files.base import ContentFile
+import base64
+import uuid
 
 # CHECK SERIALIZERS SEE IF CAN REUSE THE COMMENT SERIALIZER
 class PostViewSet(ViewSet):
@@ -20,6 +23,11 @@ class PostViewSet(ViewSet):
         post.title = request.data["title"]
         post.user = rareuser
         post.content = request.data["content"]
+        if request.data["image_url"] :
+            format, imgstr = request.data["image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["title"]}-{uuid.uuid4()}.{ext}')
+            post.image_url = data
         if request.data["category_id"] is not 0 :
             category = Category.objects.get(pk=request.data["category_id"])
             post.category = category
@@ -44,6 +52,11 @@ class PostViewSet(ViewSet):
         post.title = request.data["title"]
         post.user = rareuser
         post.content = request.data["content"]
+        if request.data["image_url"] :
+            format, imgstr = request.data["image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["title"]}-{uuid.uuid4()}.{ext}')
+            post.image_url = data
         if request.data["category_id"] is not 0 :
             category = Category.objects.get(pk=request.data["category_id"])
             post.category = category
@@ -90,12 +103,17 @@ class CommentSerializer(serializers.ModelSerializer):
     author = RareUserSerializer(many=False)
     class Meta:
         model = Comment
-        fields = "__all__"       
+        fields = "__all__" 
+class PostReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostReaction
+        fields = ('__all__')         
 class PostSerializer(serializers.ModelSerializer):
     user = RareUserSerializer(many=False)
     category = CategorySerializer(many=False)
     tag_set = TagSerializer(many=True)
     comment_set = CommentSerializer(many=True)
+    postreaction_set = PostReactionSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership')
+        fields = ('id', 'title','user','content','image_url','publication_date','approved','tag_set', 'category', 'comment_set', 'ownership','postreaction_set')
