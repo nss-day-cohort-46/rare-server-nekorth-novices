@@ -58,22 +58,20 @@ class PostViewSet(ViewSet):
         rareuser = RareUser.objects.get(user=request.auth.user)
         post = Post.objects.get(pk=pk)
         post.ownership = rareuser
-        if post.ownership :
-            post.title = request.data["title"]
-            post.user = rareuser
-            post.content = request.data["content"]
-            if request.data["image_url"] :
-                format, imgstr = request.data["image_url"].split(';base64,')
-                ext = format.split('/')[-1]
-                data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["title"]}-{uuid.uuid4()}.{ext}')
-                post.image_url = data
-            if request.data["category_id"] is not 0 :
-                category = Category.objects.get(pk=request.data["category_id"])
-                post.category = category
-            post.tag_set.set(request.data["tag_ids"])
-            post.save()
-            return Response({}, status=status.HTTP_204_NO_CONTENT)
-        return Response({"message":"nice try adam"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        post.title = request.data["title"]
+        post.user = rareuser
+        post.content = request.data["content"]
+        if request.data["image_url"] :
+            format, imgstr = request.data["image_url"].split(';base64,')
+            ext = format.split('/')[-1]
+            data = ContentFile(base64.b64decode(imgstr), name=f'{request.data["title"]}-{uuid.uuid4()}.{ext}')
+            post.image_url = data
+        if request.data["category_id"] is not 0 :
+            category = Category.objects.get(pk=request.data["category_id"])
+            post.category = category
+        post.tag_set.set(request.data["tag_ids"])
+        post.save()
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
     def destroy(self, request, pk=None):
         try:
             post = Post.objects.get(pk=pk)
